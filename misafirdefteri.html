@@ -116,7 +116,7 @@
     setupBtn.textContent = 'Kuruluyor...';
     try {
       
-const res = await fetch(KVDB_BASE + '/?email=ornek@gmail.com', { method: 'POST' });      const bucketId = (await res.text()).trim();
+const res = await fetch(KVDB_BASE + '/?email=sumto1718@gmail.com', { method: 'POST' });      const bucketId = (await res.text()).trim();
       setupResult.innerHTML =
         '<p style="font-weight:800;">Hazır! Bu kodu kopyala:</p>' +
         '<code style="display:block;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:0.8rem;margin:0.5rem 0;font-size:1.1rem;">' + bucketId + '</code>' +
