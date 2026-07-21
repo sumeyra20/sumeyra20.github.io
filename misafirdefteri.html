@@ -36,13 +36,6 @@
   </div>
 </header>
 
-<!-- ============ KURULUM UYARISI ============ -->
-<div id="setup-box" class="gb-setup" style="display:none; max-width:600px; margin:0 auto 2rem; padding:1.5rem; background:var(--paper); border:2px dashed var(--coral); border-radius:12px; text-align:center;">
-  <p style="margin-top:0;"><strong>Tek Seferlik Kurulum Gerekiyor:</strong> Misafir defterinin mesajları saklayabilmesi için aşağıdaki butona tıklayarak bir depo kimliği (Bucket ID) üretin.</p>
-  <button id="setup-btn" class="gb-btn" style="cursor:pointer; padding:0.6rem 1.2rem; font-weight:800;">Defteri Kur</button>
-  <div id="setup-result" style="margin-top:1rem;"></div>
-</div>
-
 <main class="gb-wrap">
   <form id="gb-form" class="gb-form">
     <div class="gb-row">
@@ -83,57 +76,25 @@
   });
 
   // =========================================================================
-  // KURULUM ADIMLARI:
-  // 1) Sayfayı açıp "Defteri Kur" butonuna basın.
-  // 2) Oluşan kodu kopyalayıp aşağıdaki BUCKET_ID tırnaklarının içine yapıştırın.
+  // BUCKET & EMAIL TANIMLARI
   // =========================================================================
-  const BUCKET_ID = 'BUCKET_ID_BURAYA'; 
-  const USER_EMAIL = 'sumto1718@gmail.com'; // <-- Kendi e-postanızı buraya yazın
+  const USER_EMAIL = 'sumto1718@gmail.com'; 
   const KVDB_BASE = 'https://kvdb.io';
   const ENTRIES_KEY = 'misafir-defteri';
 
-  const setupBox = document.getElementById('setup-box');
-  const setupBtn = document.getElementById('setup-btn');
-  const setupResult = document.getElementById('setup-result');
   const form = document.getElementById('gb-form');
   const nameInput = document.getElementById('gb-name');
   const msgInput = document.getElementById('gb-message');
   const statusEl = document.getElementById('gb-status');
   const entriesEl = document.getElementById('gb-entries');
 
-  const needsSetup = !BUCKET_ID || BUCKET_ID === 'BUCKET_ID_BURAYA';
-
-  if (needsSetup) {
-    setupBox.style.display = 'block';
-    form.style.display = 'none';
-    entriesEl.innerHTML = '';
-  } else {
-    loadEntries();
-  }
-
-  // Kurulum Butonu Mantığı (E-posta parametresi eklendi)
-  setupBtn.addEventListener('click', async () => {
-    setupBtn.disabled = true;
-    setupBtn.textContent = 'Kuruluyor...';
-    try {
-      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}`, { method: 'POST' });
-      if (!res.ok) throw new Error();
-      const bucketId = (await res.text()).trim();
-      setupResult.innerHTML =
-        '<p style="font-weight:800; color:#27ae60;">Hazır! Üretilen ID Kodu:</p>' +
-        '<code style="display:block; background:#eee; color:#333; border:2px solid #ccc; border-radius:8px; padding:0.8rem; margin:0.5rem 0; font-size:1.1rem; word-break:break-all;">' + bucketId + '</code>' +
-        '<p>Bu kodu HTML dosyasındaki <code>const BUCKET_ID = \'BUCKET_ID_BURAYA\';</code> alanına yapıştırın ve kaydedin.</p>';
-    } catch (err) {
-      setupResult.innerHTML = '<p style="color:#c0392b;">Bir şeyler ters gitti. Lütfen koddaki USER_EMAIL alanını kontrol edip tekrar deneyin.</p>';
-      setupBtn.disabled = false;
-      setupBtn.textContent = 'Defteri Kur';
-    }
-  });
+  // Sayfa açılınca doğrudan mesajları yükle
+  loadEntries();
 
   // Mesajları Yükleme
   async function loadEntries() {
     try {
-      const res = await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`);
+      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`);
       let entries = [];
       if (res.ok) {
         const text = await res.text();
@@ -179,21 +140,27 @@
 
     statusEl.textContent = 'Gönderiliyor...';
     try {
-      const res = await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`);
+      // Önce var olanları çek
+      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`);
       let entries = [];
       if (res.ok) {
         const text = await res.text();
         entries = text ? JSON.parse(text) : [];
       }
+
+      // Yeni mesajı diziye ekle
       entries.push({
         name,
         message,
         date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
       });
-      await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`, {
-        method: 'PUT',
+
+      // Güncellenmiş diziyi kaydet
+      await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`, {
+        method: 'POST',
         body: JSON.stringify(entries)
       });
+
       renderEntries(entries);
       nameInput.value = '';
       msgInput.value = '';
