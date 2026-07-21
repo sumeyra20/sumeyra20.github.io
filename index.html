@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seyahat Günlüğüm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">seyahatlerim<span class="dot">.</span></span>
+  <a class="nav-back" href="misafirdefteri.html">✍️ Misafir Defteri</a>
+</nav>
+
+<header class="hero">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+  <div class="hero-inner">
+    <span class="eyebrow">Kişisel seyahat arşivi</span>
+    <h1>Gittiğim yerler, <span class="accent">anlattığım</span> hikayeler</h1>
+    <p class="hero-sub">Her kart bir gezi, her gezinin kendi hikaye sayfası var. Bir tanesine tıkla, oku!</p>
+  </div>
+</header>
+
+<section class="map-section">
+  <div id="turkiye-map"></div>
+</section>
+
+<main class="entries" id="entries">
+
+  <!-- ================= KART 1 — kopyalayıp yeni yer ekleyebilirsin ================= -->
+  <a class="card" href="lapseki.html" style="--card-color:#ffc93c">
+    <div class="card-photo">
+      <img src="https://picsum.photos/seed/lapseki/900/650" alt="Lapseki, Çanakkale">
+      <span class="pin" style="color:#24262b">📍 Türkiye</span>
+    </div>
+    <div class="card-body">
+      <p class="card-loc">Lapseki, Çanakkale · Temmuz 2026</p>
+      <h2>Akşamüstü boğaz manzarası</h2>
+      <p class="card-text">Kıymetli biriyle geçirdiğim, saatlerin nasıl geçtiğini anlamadığım bir gün.</p>
+      <span class="card-cta">Devamını oku <span class="arrow">→</span></span>
+    </div>
+  </a>
+
+  <!-- Yeni bir yer eklemek için:
+       1) Yukarıdaki <a class="card"> bloklarından birini kopyala
+       2) href'i yeni bir dosya adıyla değiştir (ör. "izmir.html")
+       3) --card-color'ı istediğin renkle değiştir (--blue, --coral, --yellow, --green, --purple)
+       4) Fotoğrafı, konumu, tarihi ve kısa yazıyı değiştir
+       5) Aynı isimde yeni bir .html dosyası oluştur (paris.html'i kopyalayıp düzenleyebilirsin) -->
+
+</main>
+
+<footer class="site-footer">
+  <p>Kendi rotam · <span id="year"></span></p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // =========================================================================
+  // Haritadaki pinler. Yeni bir yer eklemek için bu listeye bir satır ekle:
+  //   { name: 'Yer adı', lat: enlem, lng: boylam, color: '#renk', href: 'sayfa.html' }
+  // Enlem/boylam öğrenmek için Google Maps'te yere sağ tıklayıp koordinatları kopyalayabilirsin.
+  // =========================================================================
+  const yerler = [
+    { name: 'Lapseki, Çanakkale', lat: 40.3411, lng: 26.6839, color: '#ffc93c', href: 'lapseki.html' },
+  ];
+
+  const map = L.map('turkiye-map', {
+    scrollWheelZoom: false,
+  }).setView([39.0, 35.2], 6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap katkıda bulunanlar',
+    maxZoom: 18,
+  }).addTo(map);
+
+  yerler.forEach(yer => {
+    const icon = L.divIcon({
+      className: 'map-pin',
+      html: `<span style="background:${yer.color}"></span>`,
+      iconSize: [26, 26],
+      iconAnchor: [13, 26],
+    });
+    const marker = L.marker([yer.lat, yer.lng], { icon }).addTo(map);
+    marker.bindPopup(
+      `<strong>${yer.name}</strong><br><a href="${yer.href}">Devamını oku →</a>`
+    );
+  });
+</script>
+</body>
+</html>
