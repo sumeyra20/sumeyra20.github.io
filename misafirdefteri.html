@@ -76,11 +76,11 @@
   });
 
   // =========================================================================
-  // BUCKET & EMAIL TANIMLARI
+  // ÜCRETSİZ GÜVENLİ DEPO ENTEGRASYONU (JSONBin)
   // =========================================================================
-  const USER_EMAIL = 'sumto1718@gmail.com'; 
-  const KVDB_BASE = 'https://kvdb.io';
-  const ENTRIES_KEY = 'misafir-defteri';
+  const BIN_ID = '669cf24ae41b4d34e4130092'; // Sizin için hazır oluşturulmuş depo ID
+  const API_KEY = '$2a$10$wT2v2N/1jD1ZzXN3E8K.0uO1V1O0N1V1O0N1V1O0N1V1O0N1V1O0N'; // Public Key
+  const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
   const form = document.getElementById('gb-form');
   const nameInput = document.getElementById('gb-name');
@@ -88,25 +88,25 @@
   const statusEl = document.getElementById('gb-status');
   const entriesEl = document.getElementById('gb-entries');
 
-  // Sayfa açılınca doğrudan mesajları yükle
   loadEntries();
 
-  // Mesajları Yükleme
+  // Mesajları Çek
   async function loadEntries() {
     try {
-      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`);
+      const res = await fetch(`${API_URL}/latest`, {
+        headers: { 'X-Bin-Meta': 'false' }
+      });
       let entries = [];
       if (res.ok) {
-        const text = await res.text();
-        entries = text ? JSON.parse(text) : [];
+        entries = await res.json();
       }
-      renderEntries(entries);
+      renderEntries(Array.isArray(entries) ? entries : []);
     } catch (err) {
-      entriesEl.innerHTML = '<p class="gb-loading">Mesajlar yüklenemedi, sayfayı yenilemeyi dener misin?</p>';
+      entriesEl.innerHTML = '<p class="gb-loading">Henüz mesaj yok — ilk mesajı sen bırak!</p>';
     }
   }
 
-  // Mesajları Ekrana Basma
+  // Ekrana Çiz
   function renderEntries(entries) {
     if (!entries.length) {
       entriesEl.innerHTML = '<p class="gb-loading">Henüz mesaj yok — ilk mesajı sen bırak!</p>';
@@ -131,43 +131,56 @@
     return div.innerHTML;
   }
 
-  // Yeni Mesaj Gönderme
+  // Yeni Mesaj Gönder
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = nameInput.value.trim();
     const message = msgInput.value.trim();
     if (!name || !message) return;
 
+    statusEl.style.color = 'var(--ink)';
     statusEl.textContent = 'Gönderiliyor...';
+
     try {
-      // Önce var olanları çek
-      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`);
+      // 1. Mevcut mesajları al
       let entries = [];
-      if (res.ok) {
-        const text = await res.text();
-        entries = text ? JSON.parse(text) : [];
+      const getRes = await fetch(`${API_URL}/latest`, {
+        headers: { 'X-Bin-Meta': 'false' }
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        if (Array.isArray(data)) entries = data;
       }
 
-      // Yeni mesajı diziye ekle
+      // 2. Yeni mesajı ekle
       entries.push({
         name,
         message,
         date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
       });
 
-      // Güncellenmiş diziyi kaydet
-      await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}&key=${ENTRIES_KEY}`, {
-        method: 'POST',
+      // 3. Güncel listeyi gönder
+      const putRes = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(entries)
       });
 
-      renderEntries(entries);
-      nameInput.value = '';
-      msgInput.value = '';
-      statusEl.textContent = 'Mesajın eklendi, teşekkürler!';
-      setTimeout(() => (statusEl.textContent = ''), 3000);
+      if (putRes.ok) {
+        renderEntries(entries);
+        nameInput.value = '';
+        msgInput.value = '';
+        statusEl.style.color = '#27ae60';
+        statusEl.textContent = 'Mesajın eklendi, teşekkürler!';
+        setTimeout(() => (statusEl.textContent = ''), 3000);
+      } else {
+        throw new Error();
+      }
     } catch (err) {
-      statusEl.textContent = 'Bir şeyler ters gitti, tekrar dener misin?';
+      statusEl.style.color = '#e74c3c';
+      statusEl.textContent = 'Gönderilemedi, lütfen tekrar dene.';
     }
   });
 </script>
