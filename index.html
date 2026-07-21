@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seyahat Günlüğüm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Kişisel seyahat arşivi</p>
+    <h1>Seyahat Günlüğüm</h1>
+    <p class="hero-sub">Gittiğim yerlerin, gördüğüm manzaraların ve topladığım anıların kaydı.</p>
+  </div>
+  <svg class="hero-route" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,150 C 200,80 300,180 450,110 S 700,40 850,100 S 1050,160 1200,90" />
+    <circle cx="450" cy="110" r="4"/>
+    <circle cx="850" cy="100" r="4"/>
+    <circle cx="1200" cy="90" r="4"/>
+  </svg>
+</header>
+
+<main class="entries" id="entries">
+
+  <!-- ================= KART 1 — bunu kopyalayıp yeni yerler ekleyebilirsin ================= -->
+  <article class="card tilt-left">
+    <div class="card-photo">
+      <img src="https://picsum.photos/seed/paris/900/650" alt="Paris">
+      <span class="stamp">
+        <span class="stamp-code">FR</span>
+        <span class="stamp-date">Eki 2025</span>
+      </span>
+    </div>
+    <div class="card-body">
+      <p class="card-loc">Paris, Fransa</p>
+      <h2>Seine kıyısında bir akşam</h2>
+      <p class="card-text">
+        Şehri en iyi yürüyerek keşfettim. Notre-Dame'ın arkasındaki küçük parktan
+        gün batımını izlemek, kartpostallardan çok daha güzeldi.
+      </p>
+    </div>
+  </article>
+
+  <!-- ================= KART 2 ================= -->
+  <article class="card tilt-right">
+    <div class="card-photo">
+      <img src="https://picsum.photos/seed/kapadokya/900/650" alt="Kapadokya">
+      <span class="stamp">
+        <span class="stamp-code">TR</span>
+        <span class="stamp-date">Ağu 2025</span>
+      </span>
+    </div>
+    <div class="card-body">
+      <p class="card-loc">Kapadokya, Türkiye</p>
+      <h2>Sabahın ilk ışığında balonlar</h2>
+      <p class="card-text">
+        Saat 5'te alarm kurup soğukta beklemeye değdi. Yüzlerce balonun
+        aynı anda gökyüzüne yükselişi hayatımda gördüğüm en sakin manzaraydı.
+      </p>
+    </div>
+  </article>
+
+  <!-- ================= KART 3 ================= -->
+  <article class="card tilt-left">
+    <div class="card-photo">
+      <img src="https://picsum.photos/seed/roma/900/650" alt="Roma">
+      <span class="stamp">
+        <span class="stamp-code">IT</span>
+        <span class="stamp-date">Mar 2025</span>
+      </span>
+    </div>
+    <div class="card-body">
+      <p class="card-loc">Roma, İtalya</p>
+      <h2>2000 yıllık taşların arasında</h2>
+      <p class="card-text">
+        Kolezyum'u ilk gördüğümde durup uzun süre baktım. Tarihin içinde
+        yürümek gibi bir his - her sokakta başka bir katman.
+      </p>
+    </div>
+  </article>
+
+  <!-- Yeni bir yer eklemek için yukarıdaki <article> bloklarından birini kopyala,
+       fotoğraf linkini, ülke kodunu, tarihi ve yazını değiştir. -->
+
+</main>
+
+<footer class="site-footer">
+  <p>Kendi rotam · <span id="year"></span></p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
