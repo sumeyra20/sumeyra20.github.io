@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misafir Defteri — Seyahat Günlüğüm</title>
+<script>
+  (function() {
+    const saved = localStorage.getItem('theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">seyahatlerim<span class="dot">.</span></span>
+  <div class="nav-right">
+    <a class="nav-back" href="index.html">← Tüm gezilerim</a>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Karanlık modu değiştir">🌙</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:1.5rem;">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+  <div class="hero-inner">
+    <span class="eyebrow">Herkese açık</span>
+    <h1>Misafir <span class="accent">Defteri</span></h1>
+    <p class="hero-sub">Buraya kısa bir not bırakabilirsin — bir anı, bir tavsiye, ya da sadece merhaba demek için.</p>
+  </div>
+</header>
+
+<!-- ============ KURULUM UYARISI (kurulum bitince bu bloğu silebilirsin) ============ -->
+<div id="setup-box" class="gb-setup" style="display:none;">
+  <p><strong>İlk kurulum gerekiyor.</strong> Misafir defterinin mesajları saklayabilmesi için tek seferlik bir "kutu" oluşturman lazım.</p>
+  <button id="setup-btn" class="gb-btn">Defteri Kur</button>
+  <div id="setup-result" style="margin-top:1rem;"></div>
+</div>
+
+<main class="gb-wrap">
+  <form id="gb-form" class="gb-form">
+    <div class="gb-row">
+      <input id="gb-name" type="text" placeholder="Adın" maxlength="40" required>
+    </div>
+    <div class="gb-row">
+      <textarea id="gb-message" placeholder="Mesajın..." maxlength="500" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="gb-btn">Bırak</button>
+    <p id="gb-status" class="gb-status"></p>
+  </form>
+
+  <div id="gb-entries" class="gb-entries">
+    <p class="gb-loading">Mesajlar yükleniyor...</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <p>Kendi rotam · <span id="year"></span></p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const themeToggle = document.getElementById('theme-toggle');
+  function updateThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+  }
+  updateThemeIcon();
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon();
+  });
+
+  // =========================================================================
+  // KURULUM (bir kere yapılır):
+  // 1) Bu sayfayı tarayıcıda aç.
+  // 2) "Defteri Kur" düğmesine bas, sana bir kutu numarası (bucket ID) verecek.
+  // 3) O numarayı kopyala ve aşağıdaki BUCKET_ID satırına yapıştır.
+  // 4) Dosyayı kaydet ve tekrar yükle (upload) — artık herkes mesaj bırakabilir.
+  // =========================================================================
+  const BUCKET_ID = 'BUCKET_ID_BURAYA'; // <-- kurulumdan sonra bu değeri değiştir
+  const KVDB_BASE = 'https://kvdb.io';
+  const ENTRIES_KEY = 'misafir-defteri';
+
+  const setupBox = document.getElementById('setup-box');
+  const setupBtn = document.getElementById('setup-btn');
+  const setupResult = document.getElementById('setup-result');
+  const form = document.getElementById('gb-form');
+  const nameInput = document.getElementById('gb-name');
+  const msgInput = document.getElementById('gb-message');
+  const statusEl = document.getElementById('gb-status');
+  const entriesEl = document.getElementById('gb-entries');
+
+  const needsSetup = !BUCKET_ID || BUCKET_ID === 'BUCKET_ID_BURAYA';
+
+  if (needsSetup) {
+    setupBox.style.display = 'block';
+    form.style.display = 'none';
+    entriesEl.innerHTML = '';
+  } else {
+    loadEntries();
+  }
+
+  setupBtn.addEventListener('click', async () => {
+    setupBtn.disabled = true;
+    setupBtn.textContent = 'Kuruluyor...';
+    try {
+      const res = await fetch(KVDB_BASE + '/', { method: 'POST' });
+      const bucketId = (await res.text()).trim();
+      setupResult.innerHTML =
+        '<p style="font-weight:800;">Hazır! Bu kodu kopyala:</p>' +
+        '<code style="display:block;background:#fff;border:2px solid var(--line);border-radius:10px;padding:0.8rem;margin:0.5rem 0;font-size:1.1rem;">' + bucketId + '</code>' +
+        '<p>Bu kodu HTML dosyasındaki <code>BUCKET_ID_BURAYA</code> yazan yere yapıştır, dosyayı kaydet ve sayfayı yeniden yükle.</p>';
+    } catch (err) {
+      setupResult.innerHTML = '<p style="color:#c0392b;">Bir şeyler ters gitti, tekrar dener misin?</p>';
+      setupBtn.disabled = false;
+      setupBtn.textContent = 'Defteri Kur';
+    }
+  });
+
+  async function loadEntries() {
+    try {
+      const res = await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`);
+      let entries = [];
+      if (res.ok) {
+        const text = await res.text();
+        entries = text ? JSON.parse(text) : [];
+      }
+      renderEntries(entries);
+    } catch (err) {
+      entriesEl.innerHTML = '<p class="gb-loading">Mesajlar yüklenemedi, sayfayı yenilemeyi dener misin?</p>';
+    }
+  }
+
+  function renderEntries(entries) {
+    if (!entries.length) {
+      entriesEl.innerHTML = '<p class="gb-loading">Henüz mesaj yok — ilk mesajı sen bırak!</p>';
+      return;
+    }
+    entriesEl.innerHTML = entries
+      .slice()
+      .reverse()
+      .map(e => `
+        <div class="gb-entry">
+          <p class="gb-entry-name">${escapeHtml(e.name)}</p>
+          <p class="gb-entry-msg">${escapeHtml(e.message)}</p>
+          <p class="gb-entry-date">${escapeHtml(e.date || '')}</p>
+        </div>
+      `)
+      .join('');
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const message = msgInput.value.trim();
+    if (!name || !message) return;
+
+    statusEl.textContent = 'Gönderiliyor...';
+    try {
+      const res = await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`);
+      let entries = [];
+      if (res.ok) {
+        const text = await res.text();
+        entries = text ? JSON.parse(text) : [];
+      }
+      entries.push({
+        name,
+        message,
+        date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+      });
+      await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`, {
+        method: 'PUT',
+        body: JSON.stringify(entries)
+      });
+      renderEntries(entries);
+      nameInput.value = '';
+      msgInput.value = '';
+      statusEl.textContent = 'Mesajın eklendi, teşekkürler!';
+      setTimeout(() => (statusEl.textContent = ''), 3000);
+    } catch (err) {
+      statusEl.textContent = 'Bir şeyler ters gitti, tekrar dener misin?';
+    }
+  });
+</script>
+</body>
+</html>
