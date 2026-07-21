@@ -36,10 +36,10 @@
   </div>
 </header>
 
-<!-- ============ KURULUM UYARISI (kurulum bitince bu bloğu silebilirsin) ============ -->
-<div id="setup-box" class="gb-setup" style="display:none;">
-  <p><strong>İlk kurulum gerekiyor.</strong> Misafir defterinin mesajları saklayabilmesi için tek seferlik bir "kutu" oluşturman lazım.</p>
-  <button id="setup-btn" class="gb-btn">Defteri Kur</button>
+<!-- ============ KURULUM UYARISI ============ -->
+<div id="setup-box" class="gb-setup" style="display:none; max-width:600px; margin:0 auto 2rem; padding:1.5rem; background:var(--paper); border:2px dashed var(--coral); border-radius:12px; text-align:center;">
+  <p style="margin-top:0;"><strong>Tek Seferlik Kurulum Gerekiyor:</strong> Misafir defterinin mesajları saklayabilmesi için aşağıdaki butona tıklayarak bir depo kimliği (Bucket ID) üretin.</p>
+  <button id="setup-btn" class="gb-btn" style="cursor:pointer; padding:0.6rem 1.2rem; font-weight:800;">Defteri Kur</button>
   <div id="setup-result" style="margin-top:1rem;"></div>
 </div>
 
@@ -67,6 +67,7 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  // Tema Değiştirici
   const themeToggle = document.getElementById('theme-toggle');
   function updateThemeIcon() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -82,13 +83,12 @@
   });
 
   // =========================================================================
-  // KURULUM (bir kere yapılır):
-  // 1) Bu sayfayı tarayıcıda aç.
-  // 2) "Defteri Kur" düğmesine bas, sana bir kutu numarası (bucket ID) verecek.
-  // 3) O numarayı kopyala ve aşağıdaki BUCKET_ID satırına yapıştır.
-  // 4) Dosyayı kaydet ve tekrar yükle (upload) — artık herkes mesaj bırakabilir.
+  // KURULUM ADIMLARI:
+  // 1) Sayfayı açıp "Defteri Kur" butonuna basın.
+  // 2) Oluşan kodu kopyalayıp aşağıdaki BUCKET_ID tırnaklarının içine yapıştırın.
   // =========================================================================
-  const BUCKET_ID = 'email required: set email=user@example.com when creating the bucket'; // <-- kurulumdan sonra bu değeri değiştir
+  const BUCKET_ID = 'BUCKET_ID_BURAYA'; 
+  const USER_EMAIL = 'ornek@gmail.com'; // <-- Kendi e-postanızı buraya yazın
   const KVDB_BASE = 'https://kvdb.io';
   const ENTRIES_KEY = 'misafir-defteri';
 
@@ -111,23 +111,26 @@
     loadEntries();
   }
 
+  // Kurulum Butonu Mantığı (E-posta parametresi eklendi)
   setupBtn.addEventListener('click', async () => {
     setupBtn.disabled = true;
     setupBtn.textContent = 'Kuruluyor...';
     try {
-      
-const res = await fetch(KVDB_BASE + '/?email=sumto1718@gmail.com', { method: 'POST' });      const bucketId = (await res.text()).trim();
+      const res = await fetch(`${KVDB_BASE}/?email=${encodeURIComponent(USER_EMAIL)}`, { method: 'POST' });
+      if (!res.ok) throw new Error();
+      const bucketId = (await res.text()).trim();
       setupResult.innerHTML =
-        '<p style="font-weight:800;">Hazır! Bu kodu kopyala:</p>' +
-        '<code style="display:block;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:0.8rem;margin:0.5rem 0;font-size:1.1rem;">' + bucketId + '</code>' +
-        '<p>Bu kodu HTML dosyasındaki <code>BUCKET_ID_BURAYA</code> yazan yere yapıştır, dosyayı kaydet ve sayfayı yeniden yükle.</p>';
+        '<p style="font-weight:800; color:#27ae60;">Hazır! Üretilen ID Kodu:</p>' +
+        '<code style="display:block; background:#eee; color:#333; border:2px solid #ccc; border-radius:8px; padding:0.8rem; margin:0.5rem 0; font-size:1.1rem; word-break:break-all;">' + bucketId + '</code>' +
+        '<p>Bu kodu HTML dosyasındaki <code>const BUCKET_ID = \'BUCKET_ID_BURAYA\';</code> alanına yapıştırın ve kaydedin.</p>';
     } catch (err) {
-      setupResult.innerHTML = '<p style="color:#c0392b;">Bir şeyler ters gitti, tekrar dener misin?</p>';
+      setupResult.innerHTML = '<p style="color:#c0392b;">Bir şeyler ters gitti. Lütfen koddaki USER_EMAIL alanını kontrol edip tekrar deneyin.</p>';
       setupBtn.disabled = false;
       setupBtn.textContent = 'Defteri Kur';
     }
   });
 
+  // Mesajları Yükleme
   async function loadEntries() {
     try {
       const res = await fetch(`${KVDB_BASE}/${BUCKET_ID}/${ENTRIES_KEY}`);
@@ -142,6 +145,7 @@ const res = await fetch(KVDB_BASE + '/?email=sumto1718@gmail.com', { method: 'PO
     }
   }
 
+  // Mesajları Ekrana Basma
   function renderEntries(entries) {
     if (!entries.length) {
       entriesEl.innerHTML = '<p class="gb-loading">Henüz mesaj yok — ilk mesajı sen bırak!</p>';
@@ -166,6 +170,7 @@ const res = await fetch(KVDB_BASE + '/?email=sumto1718@gmail.com', { method: 'PO
     return div.innerHTML;
   }
 
+  // Yeni Mesaj Gönderme
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = nameInput.value.trim();
