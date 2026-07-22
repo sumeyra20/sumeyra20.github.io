@@ -204,6 +204,88 @@ a { color: inherit; text-decoration: none; }
   #turkiye-map { height: 320px; }
 }
 
+/* ---------- MAP: MİSAFİR PİNİ EKLEME ---------- */
+.map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.map-add-btn {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.65rem 1.4rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.map-add-btn:hover { transform: translateY(-2px); }
+.map-add-status {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.map-pin-visitor span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid #fff;
+  background: var(--blue);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+.pin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+}
+.pin-modal {
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 6px 0 var(--line);
+}
+.pin-modal h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.4rem;
+}
+.pin-modal-coords {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0 0 1rem;
+}
+.pin-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
 /* ---------- ENTRIES GRID ---------- */
 .entries {
   max-width: 1100px;
@@ -464,4 +546,5 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 480px) {
   .hero { padding: 2.2rem 1.2rem 2rem; }
   .entries { padding: 0.5rem 1.2rem 3.5rem; gap: 1.6rem; }
+  .pin-modal { padding: 1.4rem; }
 }
