@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galata Kulesi — Seyahat Günlüğüm</title>
+<script>
+  (function() {
+    const saved = localStorage.getItem('theme');
+    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">seyahatlerim<span class="dot">.</span></span>
+  <div class="nav-right">
+    <a class="nav-back" href="index.html">← Tüm gezilerim</a>
+    <a class="nav-back" href="misafirdefteri.html">✍️ Misafir Defteri</a>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Karanlık modu değiştir">🌙</button>
+  </div>
+</nav>
+
+<div class="detail-hero">
+  <img class="detail-photo" src="images/galata_sayfa.jpg" alt="Galata Kulesi, İstanbul">
+</div>
+
+<div class="detail-meta" style="max-width:900px;margin:1.3rem auto 0;padding:0 1.5rem;">
+  <span class="pill" style="background:#2f80ed">📍 Galata Kulesi, İstanbul</span>
+  <span class="pill" style="background:#8c6ff7">Nisan 2026</span>
+</div>
+
+<h1 class="detail-title">Pencereden Galata manzarası</h1>
+
+<div class="detail-body">
+  <p>
+    Galata Kulesi'ne bu güne kadar sayamayacağım kadar çok kez gittim. Ama bu sefer
+    hikaye bambaşkaydı; çünkü bu kez yanımda benim için çok kıymetli biri vardı.
+  </p>
+  <p>
+    Bir pencerenin önüne oturup kuleyi ve aşağıda akıp giden meydanı birlikte izledik.
+    Kalabalık, sesler, o tanıdık manzara... hepsi aynıydı ama yanımda o olunca her şey
+    bambaşka bir anlam kazandı. O günün mutluluğu, daha önce hiç yaşamadığım bir tazelikteydi.
+  </p>
+  <p>
+    Bazen en tanıdık yerler bile, doğru kişiyle bakınca ilk kez görüyormuş gibi hissettiriyor.
+    Nisan ayının o günü, İstanbul'un yüzlerce kez gördüğüm bir köşesini bana yeniden keşfettirdi.
+  </p>
+</div>
+
+<div class="detail-footer">
+  <a class="back-link" href="index.html">← Tüm gezilerime dön</a>
+</div>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  function updateThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+  }
+  updateThemeIcon();
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon();
+  });
+</script>
+
+</body>
+</html>
