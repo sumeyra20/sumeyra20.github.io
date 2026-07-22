@@ -204,7 +204,7 @@ a { color: inherit; text-decoration: none; }
   #turkiye-map { height: 320px; }
 }
 
-/* ---------- MAP: MİSAFİR PİNİ EKLEME ---------- */
+/* ---------- MAP: MÄ°SAFÄ°R PÄ°NÄ° EKLEME ---------- */
 .map-toolbar {
   display: flex;
   align-items: center;
@@ -247,11 +247,24 @@ a { color: inherit; text-decoration: none; }
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   z-index: 1000;
+  display: none;
+}
+/* [hidden] tek baÅŸÄ±na yeterli deÄŸil Ã§Ã¼nkÃ¼ yukarÄ±daki class display'i ezer;
+   bu yÃ¼zden gÃ¶rÃ¼nÃ¼rlÃ¼ÄŸÃ¼ aÃ§Ä±kÃ§a :not([hidden]) ile kontrol ediyoruz. */
+.pin-modal-overlay:not([hidden]) {
+  display: flex;
+}
+
+.pin-success { text-align: center; }
+.pin-success-msg {
+  font-weight: 700;
+  color: var(--green);
+  margin: 0 0 1.2rem;
+  line-height: 1.5;
 }
 .pin-modal {
   position: relative;
