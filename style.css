@@ -322,6 +322,40 @@ a { color: inherit; text-decoration: none; }
   object-fit: cover;
 }
 
+/* ---------- FOTOÄRAF BÃœYÃœTME (LIGHTBOX) ---------- */
+.photo-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 2000;
+  display: none;
+}
+.photo-lightbox-overlay:not([hidden]) {
+  display: flex;
+}
+.photo-lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.photo-lightbox-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.92);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
 /* ---------- ENTRIES GRID ---------- */
 .entries {
   max-width: 1100px;
