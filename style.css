@@ -170,6 +170,66 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink-soft);
 }
 
+/* ---------- Ã–NE Ã‡IKANLAR (en Ã§ok beÄŸenilen iz) ---------- */
+.highlight-section {
+  max-width: 700px;
+  margin: 0 auto 2.2rem;
+  padding: 0 1.5rem;
+}
+.highlight-card {
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--yellow);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 6px 0 var(--yellow);
+  transform: rotate(-0.5deg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.highlight-card:hover {
+  transform: translateY(-3px) rotate(0deg);
+  box-shadow: 0 9px 0 var(--yellow);
+}
+.highlight-badge {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #7a5b00;
+  background: var(--yellow);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 0.8rem;
+}
+.highlight-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.highlight-photo {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--line);
+  flex-shrink: 0;
+}
+.highlight-text { flex: 1; min-width: 160px; }
+.highlight-text h3 { font-size: 1.2rem; margin: 0.2rem 0 0.3rem; }
+.highlight-message {
+  margin: 0 0 0.4rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.highlight-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
 /* ---------- MAP ---------- */
 .map-section {
   max-width: 1100px;
@@ -241,6 +301,27 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid #fff;
   background: var(--blue);
   box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+/* Yeni eklenen misafir pini haritaya zÄ±playarak dÃ¼ÅŸer */
+@keyframes pinDrop {
+  0% { transform: translateY(-34px) scale(0.4) rotate(-45deg); opacity: 0; }
+  60% { transform: translateY(6px) scale(1.15) rotate(-45deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(-45deg); }
+}
+.pin-drop-anim span {
+  animation: pinDrop 0.55s cubic-bezier(.34,1.56,.64,1);
+}
+
+.pin-cat-badge {
+  display: inline-block;
+  background: var(--cat-color, var(--purple));
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.68rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.3rem;
 }
 
 .pin-modal-overlay {
@@ -320,6 +401,47 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-sm);
   border: 2px solid var(--line);
   object-fit: cover;
+}
+
+.pin-category-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pin-cat-btn {
+  border: 2px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.pin-cat-btn:hover { transform: translateY(-1px); }
+.pin-cat-btn.is-active {
+  background: var(--cat-color, var(--purple));
+  border-color: var(--cat-color, var(--purple));
+  color: #fff;
+}
+
+/* Pin ekleme baÅŸarÄ±lÄ± olunca kÄ±sa bir konfeti patlamasÄ± */
+.pin-success { position: relative; overflow: visible; }
+.confetti-piece {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: confettiFall 0.9s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--x), 100px) rotate(var(--rot)); opacity: 0; }
 }
 
 /* ---------- FOTOÄRAF BÃœYÃœTME (LIGHTBOX) ---------- */
@@ -585,6 +707,11 @@ a { color: inherit; text-decoration: none; }
   border-left: 5px solid var(--purple);
   border-radius: var(--radius-sm);
   padding: 1rem 1.2rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.gb-entry:hover {
+  transform: translateY(-3px) rotate(-0.3deg);
+  box-shadow: 0 8px 0 var(--line);
 }
 .gb-entry-name {
   font-family: 'Baloo 2', sans-serif;
@@ -644,7 +771,9 @@ a:focus-visible, button:focus-visible {
   outline-offset: 2px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .card, .card-cta .arrow, .nav-back, .back-link, .theme-toggle, body { transition: none; }
+  .card, .card-cta .arrow, .nav-back, .back-link, .theme-toggle, body,
+  .gb-entry, .highlight-card, .gb-like-btn, .pin-like-btn, .pin-cat-btn { transition: none; }
+  .pin-drop-anim span, .confetti-piece { animation: none; }
 }
 
 @media (max-width: 480px) {
